@@ -1,0 +1,41 @@
+let menuPool = null;
+var blipPoint = null;
+
+API.onServerEventTrigger.connect(function (eventName, args) {
+
+	if(eventName == "drawACard"){
+		
+		menuPool = API.getMenuPool(); 
+        let menu = API.createMenu("Dealer Choice - ", 0, 0, 6);
+		API.setMenuTitle(menu, "Dealer");
+        let item1 = API.createMenuItem("Private Draw","Draw a card in secret. Only you will know the value. Exciting.");
+		let item2 = API.createMenuItem("Public Draw","Reveal your cards to the world!");
+		
+		item1.Activated.connect(function(menu, item) {
+			API.triggerServerEvent("startDraw","private");
+			menu.Visible = false;
+        });
+		
+		item2.Activated.connect(function(menu,item){
+			API.triggerServerEvent("startDraw","public");
+			menu.Visible = false;
+		});
+		
+		
+		menu.AddItem(item1);
+        menu.AddItem(item2);
+        menuPool.Add(menu);
+		API.setMenuBannerRectangle(menu, 100, 0, 0, 255);
+
+		
+		menu.Visible = true;            
+	}
+
+});
+API.onUpdate.connect(function() {
+    if (menuPool != null) {
+        menuPool.ProcessMenus();
+    }
+});
+
+	
